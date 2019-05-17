@@ -1,0 +1,62 @@
+import pandas as pd
+import numpy as np
+
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import cross_val_score
+
+%matplotlib inline
+
+#data_upload
+df = pd.read_csv('https://raw.githubusercontent.com/aczepielik/KRKtram/master/reports/report_07-23.csv')
+df.head()
+
+df[ df.tripId == 6351558574044670211]
+
+df.delay.value_counts(normalize=True)
+#data_visualization
+df.delay.hist(bins=15)
+df.delay.describe()
+df.columns
+
+df[ 'delay_sec' ] = df[ 'delay' ].map(lambda x: x*60)
+df['direction_cat'] = df['direction'].factorize()[0]
+df['vehicleId'].fillna(-1, inplace=True)
+df['seq_num'].fillna(-1, inplace=True)
+df.apply(lambda x: '{} {}'.format(x['number'], x['direction']) , axis=1).factorize()[0]
+
+x = df[ ['number', 'stop', 'direction_cat', 'vehicleId', 'seq_num' ] ].values
+y = df[ 'delay_sec' ].values
+
+model = DecisionTreeRegressor(max_depth=10)
+scores = cross_val_score(model, x, y, cv=3, scoring='neg_mean_absolute_error')
+np.mean(scores), np.std(scores)
+
+df[ 'delay_sec' ] = df[ 'delay' ].map(lambda x: x*60)
+df['direction_cat'] = df['direction'].factorize()[0]
+df['vehicleId'].fillna(-1, inplace=True)
+df['seq_num'].fillna(-1, inplace=True)
+
+def gen_id_num_direction(x):
+    return '{} {}'.format(x['number'], x['direction'])
+df['Id_po_numerku'] = df.apply(gen_id_num_direction , axis=1).factorize()[0]
+
+def gen_id_stop_direction(x):
+    return '{} {}'.format(x['stop'], x['direction'])
+df['Id_po_przystanku'] = df.apply(gen_id_stop_direction , axis=1).factorize()[0]
+
+feats = [ 'number',
+'stop',
+'direction_cat',
+'vehicleId',
+'seq_num',
+'Id_po_numerku',
+'Id_po_przystanku'
+        ]
+
+x = df[ feats ].values
+y = df[ 'delay_sec' ].values
+
+model = DecisionTreeRegressor(max_depth=10)
+scores = cross_val_score(model, x, y, cv=3, scoring='neg_mean_absolute_error')
+np.mean(scores), np.std(scores)
