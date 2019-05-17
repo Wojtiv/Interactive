@@ -1,0 +1,47 @@
+#repositories
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+df = pd.read_csv("https://raw.githubusercontent.com/dataworkshop/webinar-titanic/master/input/train.csv")
+df.head()
+
+#feats
+feats = ['Pclass', 'Sex']
+X = df[ feats ].values
+y = df['Survived'].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
+
+X_train.shape, X_test.shape
+#model
+model = DecisionTreeClassifier(max_depth=15)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+accuracy_score(y_test, y_pred)
+
+df['Sex'].value_counts()
+#model
+model = RandomForestClassifier(max_depth=10, n_estimators=50)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+accuracy_score(y_test, y_pred)
+df['Sex_cat'] = df['Sex'].factorize()[0]
+
+feats = ['Pclass', 'Sex_cat']
+X = df[ feats ].values
+y = df['Survived'].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3)
+
+X_train.shape, X_test.shape
+
+model = DecisionTreeClassifier(max_depth=10)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+accuracy_score(y_test, y_pred)
