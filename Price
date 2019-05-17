@@ -1,0 +1,7 @@
+question = int(input("ile zarabiasz?"))
+question2 = int(input("ile to kosztuje"))
+
+answer = (question2/question) * 100
+print("Ten wydatek to:") 
+print(round(answer, 2), end=""),
+print("% Twojej pensji")
