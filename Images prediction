@@ -1,0 +1,22 @@
+from keras.applications.resnet50 import ResNet50, decode_predictions, preprocess_input
+from keras.preprocessing import image
+import numpy as np
+
+import requests
+from io import BytesIO
+from PIL import Image
+
+model = ResNet50(weights='imagenet')
+
+url_img = 'https://images-na.ssl-images-amazon.com/images/I/61i5G6kx3CL._SX425_.jpg' #tu wstaw url obrazka
+response = requests.get(url_img)
+img = Image.open( BytesIO(response.content) )
+img = img.resize( (224, 224) )
+img
+
+x = image.img_to_array(img)
+x = np.expand_dims(x, axis=0)
+x.shape
+
+y_pred = model.predict(x)
+decode_predictions(y_pred, top=10)
